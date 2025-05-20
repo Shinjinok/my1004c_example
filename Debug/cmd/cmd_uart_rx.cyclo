@@ -1,0 +1,2 @@
+../cmd/cmd_uart_rx.c:33:13:waitForCommand	10
+../cmd/cmd_uart_rx.c:118:6:process_uartmsg	4

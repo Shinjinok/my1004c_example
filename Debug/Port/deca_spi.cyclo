@@ -1,0 +1,4 @@
+../Port/deca_spi.c:28:5:openspi	1
+../Port/deca_spi.c:39:5:closespi	1
+../Port/deca_spi.c:51:5:writetospi	9
+../Port/deca_spi.c:97:5:readfromspi	13

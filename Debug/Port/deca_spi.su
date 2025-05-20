@@ -1,0 +1,4 @@
+../Port/deca_spi.c:28:5:openspi	0	static
+../Port/deca_spi.c:39:5:closespi	0	static
+../Port/deca_spi.c:51:5:writetospi	24	static
+../Port/deca_spi.c:97:5:readfromspi	24	static

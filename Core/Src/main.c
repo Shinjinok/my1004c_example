@@ -70,7 +70,9 @@ static void MX_USART2_UART_Init(void);
 static void MX_IWDG_Init(void);
 static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
-
+#define WAIT_VALUE 33  // 약 860ns 지연 (33 / 38.4MHz)
+#define FRAME_LEN 12
+static uint8 tx_frame[FRAME_LEN] =  { 0xc5,0x00,0x00, 0x05, 0x00, 0x10, 0x00, 0x01, 0xCA, 0xDE,0,0};
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -127,6 +129,21 @@ int inittestapplication(void)
    }
 
    instance_config(app.pConfig) ;  // Set operating channel etc
+
+
+
+   // OSTSM 모드 활성화 (EC_CTRL[OSTSM]=1)
+   dwt_write32bitreg(EXT_SYNC_ID, EC_CTRL_OSTSM);
+
+   // WAIT 값 설정 (SYNC 입력 후 지연 카운트 값)
+   //dwt_write32bitreg(EXT_SYNC_ID + 0x04, WAIT_VALUE); // 0x24:04 offset
+
+   // TX 데이터 준비
+   dwt_writetxdata(FRAME_LEN, tx_frame, 0);
+   dwt_writetxfctrl(FRAME_LEN, 0, 1);  // ranging enabled=1
+
+   // OSTS 모드로 송신 대기 (SYNC 신호 입력되면 자동 송신)
+   //dwt_starttx(DWT_START_TX_OSTS);
 
    decamutexoff(a); //enable ScenSor (EXT_IRQ) before starting
    return result;
@@ -195,8 +212,6 @@ int main(void)
     app.pcurrent_blink_interval_ms = &(app.pConfig->blink.interval_in_ms);
 
    //Initialise the accelerometer
-    uint8_t id =0;
-    int ret = i2c_slave_read(I2C1,0x33,0xf,&id,1);
    //in case of equal intervals disable the accelerometer
     if ( app.pConfig->blink.interval_in_ms == app.pConfig->blink.interval_slow_in_ms ) {
   	  lis3dh_powerdown();
@@ -215,7 +230,7 @@ int main(void)
 
   while (1)
   {
-	  vTestModeMotionDetect();
+	  //vTestModeMotionDetect();
 
 	  if( deca_uart_rx_data_ready() )
 	  {
@@ -227,7 +242,7 @@ int main(void)
 
 	  if (app.blinkenable)
 	  {
-		 instance_run();
+		// instance_run();
 
 	  }
 

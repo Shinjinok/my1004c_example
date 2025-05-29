@@ -10,7 +10,6 @@ mems/lis3dh.o: ../mems/lis3dh.c \
  ../Drivers/CMSIS/Include/cmsis_gcc.h \
  ../Drivers/CMSIS/Device/ST/STM32L0xx/Include/system_stm32l0xx.h \
  ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_i2c.h \
- ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_iwdg.h \
  ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_crs.h \
  ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_rcc.h \
  ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_bus.h \
@@ -37,7 +36,6 @@ mems/lis3dh.o: ../mems/lis3dh.c \
 ../Drivers/CMSIS/Include/cmsis_gcc.h:
 ../Drivers/CMSIS/Device/ST/STM32L0xx/Include/system_stm32l0xx.h:
 ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_i2c.h:
-../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_iwdg.h:
 ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_crs.h:
 ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_rcc.h:
 ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_bus.h:

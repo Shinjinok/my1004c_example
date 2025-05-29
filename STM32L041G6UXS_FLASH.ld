@@ -46,6 +46,7 @@ MEMORY
 {
   RAM    (xrw)    : ORIGIN = 0x20000000,   LENGTH = 8K
   FLASH    (rx)    : ORIGIN = 0x8000000,   LENGTH = 32K
+  EEPROM (rx)      : ORIGIN = 0x8080000, LENGTH = 1K
 }
 
 /* Sections */
@@ -58,7 +59,21 @@ SECTIONS
     KEEP(*(.isr_vector)) /* Startup code */
     . = ALIGN(4);
   } >FLASH
-
+/* Configuration data default_config goes into generic FLASH */
+  .default_config_page :
+  {
+  	. = ALIGN(4);
+    KEEP(*(.default_config))
+    . = ALIGN(4);
+  } >FLASH
+ 
+  /* Configuration data fconfig 256 bytes goes into EEPROM */
+  .fconfig_page (0x08080000) (NOLOAD) :
+  {
+  	. = ALIGN(4);
+    KEEP(*(.fConfig))
+    . = ALIGN(4);
+  } >EEPROM
   /* The program code and other data into "FLASH" Rom type memory */
   .text :
   {

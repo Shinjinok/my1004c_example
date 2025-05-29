@@ -29,7 +29,6 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32l0xx_ll_crc.h"
 #include "stm32l0xx_ll_i2c.h"
-#include "stm32l0xx_ll_iwdg.h"
 #include "stm32l0xx_ll_crs.h"
 #include "stm32l0xx_ll_rcc.h"
 #include "stm32l0xx_ll_bus.h"
@@ -103,7 +102,6 @@ void Error_Handler(void);
 #define M_PIN17_GPIO_Port GPIOB
 #define Button_Pin LL_GPIO_PIN_5
 #define Button_GPIO_Port GPIOB
-#define Button_EXTI_IRQn EXTI4_15_IRQn
 #ifndef NVIC_PRIORITYGROUP_0
 #define NVIC_PRIORITYGROUP_0         ((uint32_t)0x00000007) /*!< 0 bit  for pre-emption priority,
                                                                  4 bits for subpriority */

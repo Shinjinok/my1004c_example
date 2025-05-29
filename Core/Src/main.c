@@ -67,7 +67,6 @@ static void MX_CRC_Init(void);
 static void MX_RTC_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_USART2_UART_Init(void);
-static void MX_IWDG_Init(void);
 static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
 #define WAIT_VALUE 33  // 약 860ns 지연 (33 / 38.4MHz)
@@ -158,7 +157,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-	SET_BIT(DBGMCU->CR, DBGMCU_CR_DBG_SLEEP | DBGMCU_CR_DBG_STOP | DBGMCU_CR_DBG_STANDBY );
+	//SET_BIT(DBGMCU->CR, DBGMCU_CR_DBG_SLEEP | DBGMCU_CR_DBG_STOP | DBGMCU_CR_DBG_STANDBY );
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -166,9 +165,6 @@ int main(void)
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_SYSCFG);
   LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_PWR);
-
-  /* SysTick_IRQn interrupt configuration */
-  NVIC_SetPriority(SysTick_IRQn, 3);
 
   /* USER CODE BEGIN Init */
 
@@ -190,10 +186,9 @@ int main(void)
   MX_RTC_Init();
   MX_SPI1_Init();
   MX_USART2_UART_Init();
-  MX_IWDG_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-  LL_SYSTICK_SetClkSource(LL_SYSTICK_CLKSOURCE_HCLK);
+
   memset(&app,0,sizeof(app));
 
     /* reset DW1000 */
@@ -399,36 +394,6 @@ static void MX_I2C1_Init(void)
   /* USER CODE BEGIN I2C1_Init 2 */
 
   /* USER CODE END I2C1_Init 2 */
-
-}
-
-/**
-  * @brief IWDG Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_IWDG_Init(void)
-{
-
-  /* USER CODE BEGIN IWDG_Init 0 */
-
-  /* USER CODE END IWDG_Init 0 */
-
-  /* USER CODE BEGIN IWDG_Init 1 */
-
-  /* USER CODE END IWDG_Init 1 */
-  LL_IWDG_Enable(IWDG);
-  LL_IWDG_EnableWriteAccess(IWDG);
-  LL_IWDG_SetPrescaler(IWDG, LL_IWDG_PRESCALER_4);
-  LL_IWDG_SetReloadCounter(IWDG, 4095);
-  while (LL_IWDG_IsReady(IWDG) != 1)
-  {
-  }
-
-  LL_IWDG_ReloadCounter(IWDG);
-  /* USER CODE BEGIN IWDG_Init 2 */
-
-  /* USER CODE END IWDG_Init 2 */
 
 }
 
@@ -782,8 +747,6 @@ static void MX_GPIO_Init(void)
   NVIC_EnableIRQ(EXTI0_1_IRQn);
   NVIC_SetPriority(EXTI2_3_IRQn, 0);
   NVIC_EnableIRQ(EXTI2_3_IRQn);
-  NVIC_SetPriority(EXTI4_15_IRQn, 0);
-  NVIC_EnableIRQ(EXTI4_15_IRQn);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 

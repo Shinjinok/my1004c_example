@@ -9,7 +9,6 @@ Port/port_platform.o: ../Port/port_platform.c ../Port/port_platform.h \
  ../Drivers/CMSIS/Include/cmsis_gcc.h \
  ../Drivers/CMSIS/Device/ST/STM32L0xx/Include/system_stm32l0xx.h \
  ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_i2c.h \
- ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_iwdg.h \
  ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_crs.h \
  ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_rcc.h \
  ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_bus.h \
@@ -35,7 +34,8 @@ Port/port_platform.o: ../Port/port_platform.c ../Port/port_platform.h \
  /home/sjo/STM32CubeIDE/workspace_1.18.0/my1004c/deca_driver/deca_regs.h \
  /home/sjo/STM32CubeIDE/workspace_1.18.0/my1004c/mems/lis3dh.h \
  /home/sjo/STM32CubeIDE/workspace_1.18.0/my1004c/mems/lis3dh_platform.h \
- /home/sjo/STM32CubeIDE/workspace_1.18.0/my1004c/mems/lis3dh_types.h
+ /home/sjo/STM32CubeIDE/workspace_1.18.0/my1004c/mems/lis3dh_types.h \
+ ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_iwdg.h
 ../Port/port_platform.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_crc.h:
@@ -47,7 +47,6 @@ Port/port_platform.o: ../Port/port_platform.c ../Port/port_platform.h \
 ../Drivers/CMSIS/Include/cmsis_gcc.h:
 ../Drivers/CMSIS/Device/ST/STM32L0xx/Include/system_stm32l0xx.h:
 ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_i2c.h:
-../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_iwdg.h:
 ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_crs.h:
 ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_rcc.h:
 ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_bus.h:
@@ -74,3 +73,4 @@ Port/port_platform.o: ../Port/port_platform.c ../Port/port_platform.h \
 /home/sjo/STM32CubeIDE/workspace_1.18.0/my1004c/mems/lis3dh.h:
 /home/sjo/STM32CubeIDE/workspace_1.18.0/my1004c/mems/lis3dh_platform.h:
 /home/sjo/STM32CubeIDE/workspace_1.18.0/my1004c/mems/lis3dh_types.h:
+../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_iwdg.h:

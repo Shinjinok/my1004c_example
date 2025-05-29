@@ -205,28 +205,6 @@ void EXTI2_3_IRQHandler(void)
 }
 
 /**
-  * @brief This function handles EXTI line 4 to 15 interrupts.
-  */
-void EXTI4_15_IRQHandler(void)
-{
-  /* USER CODE BEGIN EXTI4_15_IRQn 0 */
-
-  /* USER CODE END EXTI4_15_IRQn 0 */
-  if (LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_5) != RESET)
-  {
-    LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_5);
-
-    /* USER CODE BEGIN LL_EXTI_LINE_5 */
-    GPIO_EXTI4_15_Callback();
-
-    /* USER CODE END LL_EXTI_LINE_5 */
-  }
-  /* USER CODE BEGIN EXTI4_15_IRQn 1 */
-
-  /* USER CODE END EXTI4_15_IRQn 1 */
-}
-
-/**
   * @brief This function handles USART2 global interrupt / USART2 wake-up interrupt through EXTI line 26.
   */
 void USART2_IRQHandler(void)

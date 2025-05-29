@@ -32,6 +32,6 @@
 ../Port/port_platform.c:824:17:HAL_UART_ErrorCallback	1
 ../Port/port_platform.c:846:6:UART2_IRQHandler	27
 ../Port/port_platform.c:983:6:vTestModeMotionDetect	5
-../Port/port_platform.c:1016:6:Restart	3
+../Port/port_platform.c:1016:6:Restart	2
 ../Port/port_platform.c:1036:6:SendButton	1
 ../Port/port_platform.c:475:6:GPIO_EXTI4_15_Callback	1

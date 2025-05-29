@@ -15,7 +15,6 @@ config/config.o: ../config/config.c \
  ../Core/Inc/main.h \
  ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_crc.h \
  ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_i2c.h \
- ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_iwdg.h \
  ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_crs.h \
  ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_rcc.h \
  ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_bus.h \
@@ -46,7 +45,6 @@ config/config.o: ../config/config.c \
 ../Core/Inc/main.h:
 ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_crc.h:
 ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_i2c.h:
-../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_iwdg.h:
 ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_crs.h:
 ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_rcc.h:
 ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_bus.h:

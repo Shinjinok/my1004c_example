@@ -1,0 +1,9 @@
+../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_usart.h:2624:26:LL_USART_IsActiveFlag_TC	2
+../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_usart.h:2635:26:LL_USART_IsActiveFlag_TXE	2
+../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_usart.h:3632:22:LL_USART_TransmitData8	1
+../Port/deca_uart.c:35:5:__io_putchar	2
+../Port/deca_uart.c:44:5:_write	2
+../Port/deca_uart.c:54:6:deca_uart_rx_data_ready	1
+../Port/deca_uart.c:61:6:UART_RxCpltCallback	8
+../Port/deca_uart.c:105:6:port_tx_msg	1
+../Port/deca_uart.c:117:10:deca_uart_receive	2

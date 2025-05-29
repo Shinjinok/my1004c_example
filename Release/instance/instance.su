@@ -1,0 +1,11 @@
+../instance/instance.c:143:6:instancesettagaddress	40	static
+../instance/instance.c:173:5:testapprun	24	static
+../instance/instance.c:264:5:instance_init	24	static
+../instance/instance.c:326:6:instance_config	32	static
+../instance/instance.c:350:6:instance_txcallback	16	static
+../instance/instance.c:360:6:instance_rxgood	16	static
+../instance/instance.c:370:6:instance_rxtimeout	16	static
+../instance/instance.c:380:6:instance_rxerror	16	static
+../instance/instance.c:390:5:check_device_id	16	static
+../instance/instance.c:428:5:instance_run	40	static
+../instance/instance.c:529:8:ulong2littleEndian	24	static

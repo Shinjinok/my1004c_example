@@ -1,6 +1,0 @@
-../utils/tvc.c:163:9:tvc_otp_read_txcfgref	48	static
-../utils/tvc.c:233:6:tvc_comp	48	static
-../utils/tvc.c:285:6:tvc_calcpowertempadj	24	static
-../utils/tvc.c:330:7:tvc_calcpowervbatadj	24	static
-../utils/tvc.c:370:9:tvc_computetxpowersetting_lut	48	static
-../utils/tvc.c:418:9:tvc_calcpowertempvbatadj	48	static

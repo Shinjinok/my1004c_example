@@ -1,8 +1,0 @@
-../config/config.c:38:13:LockEeprom	2
-../config/config.c:63:13:UnlockEeprom	3
-../config/config.c:84:13:EepromProgram	1
-../config/config.c:94:16:CRC8_Calculate	2
-../config/config.c:110:6:save_bssConfig	2
-../config/config.c:137:6:load_bssConfig	2
-../config/config.c:149:16:get_pbssConfig	1
-../config/config.c:158:6:restore_nvm_fconfig	1

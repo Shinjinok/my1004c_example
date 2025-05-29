@@ -1,6 +1,0 @@
-../Port/deca_uart.c:35:5:__io_putchar	3
-../Port/deca_uart.c:44:5:_write	2
-../Port/deca_uart.c:54:6:deca_uart_rx_data_ready	1
-../Port/deca_uart.c:61:6:UART_RxCpltCallback	10
-../Port/deca_uart.c:105:6:port_tx_msg	1
-../Port/deca_uart.c:117:10:deca_uart_receive	2

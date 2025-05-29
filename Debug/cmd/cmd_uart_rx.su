@@ -1,2 +1,0 @@
-../cmd/cmd_uart_rx.c:33:13:waitForCommand	16	static
-../cmd/cmd_uart_rx.c:118:6:process_uartmsg	72	static

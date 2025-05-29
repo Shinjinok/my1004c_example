@@ -1,2 +1,0 @@
-../cmd/cmd.c:35:13:cmd_onERROR	2
-../cmd/cmd.c:53:6:command_parser	10

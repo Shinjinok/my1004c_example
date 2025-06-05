@@ -235,10 +235,12 @@ int testapprun(instance_data_t *inst, int message)
             inst->msg.frameCtrl = FCS_EUI_64 ;
             inst->msg.seqNum = inst->frame_sn++;
 
-            length = (FRAME_CRTL_AND_ADDRESS + FRAME_CRC);
-
+           // length = (FRAME_CRTL_AND_ADDRESS + FRAME_CRC);
+            length = sizeof(my_msg) + FRAME_CRC;
             // write the frame data
-            dwt_writetxdata(length, (uint8 *)  (&inst->msg), 0) ;
+           //dwt_writetxdata(length, (uint8 *)  (&inst->msg), 0) ;
+            my_msg.sqnumber++;
+            dwt_writetxdata(length, (uint8 *)  (&my_msg), 0) ;
             dwt_writetxfctrl(length, 0, 0);
 
             dwt_starttx(DWT_START_TX_IMMEDIATE); //always using immediate TX DWT_START_TX_DELAYED
@@ -449,6 +451,12 @@ int instance_run(void)
 
         if(done)//ready for next event
         {
+
+        	uint32_t status = dwt_read32bitreg(SYS_STATUS_ID);
+        	char msg[64];  // 충분한 공간 확보
+			sprintf(msg, "SYS_STATUS_ID %x no. %lu\r\n", status,my_msg.sqnumber);
+			port_tx_msg(msg, strlen(msg));  // 또는 sizeof(msg) 아님
+
             // there was an event in the buffer
             if(instance_data.event[1])
             {

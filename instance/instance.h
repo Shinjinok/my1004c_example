@@ -30,8 +30,18 @@ typedef struct
     uint8_t      	uartRx;
 }app_cfg_t;
 
-extern app_cfg_t app;
+typedef struct blink_msg{
+	uint32_t header;
+	uint32_t anchor_id;
+	uint32_t sqnumber;
+	uint32_t delay_time;
+	int32_t	posx;
+	int32_t posy;
+	int32_t posz;
+}blink_msg_t;
 
+extern app_cfg_t app;
+extern blink_msg_t my_msg;
 
 /*******************************************************************************
  ********************** NOTES on DW (MP) features/options **********************

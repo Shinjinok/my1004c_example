@@ -77,8 +77,10 @@ static uint8 tx_frame[FRAME_LEN] =  { 0xc5,0x00,0x00, 0x05, 0x00, 0x10, 0x00, 0x
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 /* Structure for all global variables */
-app_cfg_t app;
+app_cfg_t app;  // extern in instanc.h
 
+
+blink_msg_t my_msg={0xCCBBAAC5,0,0,0,0,0,0,0};
 /* @Fn  inittestapplication
 * @brief Function for initializing the SPI.
 *
@@ -111,7 +113,7 @@ int inittestapplication(void)
    }
 
    // configure: if DW1000 is calibrated then OTP config is used, enable sleep
-   result = instance_init( 1 );
+   result = instance_init( 1);
 
    if (0 > result) {
 	   Error_Handler();
@@ -132,14 +134,14 @@ int inittestapplication(void)
 
 
    // OSTSM 모드 활성화 (EC_CTRL[OSTSM]=1)
-   dwt_write32bitreg(EXT_SYNC_ID, EC_CTRL_OSTSM);
+  // dwt_write32bitreg(EXT_SYNC_ID, EC_CTRL_OSTSM);
 
    // WAIT 값 설정 (SYNC 입력 후 지연 카운트 값)
    //dwt_write32bitreg(EXT_SYNC_ID + 0x04, WAIT_VALUE); // 0x24:04 offset
 
    // TX 데이터 준비
-   dwt_writetxdata(FRAME_LEN, tx_frame, 0);
-   dwt_writetxfctrl(FRAME_LEN, 0, 1);  // ranging enabled=1
+  // dwt_writetxdata(FRAME_LEN, tx_frame, 0);
+  // dwt_writetxfctrl(FRAME_LEN, 0, 1);  // ranging enabled=1
 
    // OSTS 모드로 송신 대기 (SYNC 신호 입력되면 자동 송신)
    //dwt_starttx(DWT_START_TX_OSTS);
@@ -206,13 +208,13 @@ int main(void)
     app.blinkenable = 1;
     app.pcurrent_blink_interval_ms = &(app.pConfig->blink.interval_in_ms);
 
-   //Initialise the accelerometer
+/*   //Initialise the accelerometer
    //in case of equal intervals disable the accelerometer
     if ( app.pConfig->blink.interval_in_ms == app.pConfig->blink.interval_slow_in_ms ) {
   	  lis3dh_powerdown();
     }else{
   	  lis3dh_configure_int();
-    }
+    }*/
 
 
   /* USER CODE END 2 */
@@ -234,14 +236,25 @@ int main(void)
 
 		  LEDS_OFF(LED_BLUE_MASK);
 	  }
+	  /*my_msg.sqnumber++;
+	  dwt_writetxdata(sizeof(my_msg), (uint8*)&my_msg, 0);
+	  dwt_writetxfctrl(sizeof(my_msg), 0, 0);
+	  dwt_starttx(DWT_START_TX_IMMEDIATE);
+	  while (!(dwt_read32bitreg(SYS_STATUS_ID) & SYS_STATUS_TXFRS)) {} // 전송 완료 플래그가 뜰 때까지 대기
+	  dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_TXFRS); // 플래그 클리어
+	  uint32_t status = dwt_read32bitreg(SYS_STATUS_ID);
+	  char msg[64];  // 충분한 공간 확보
+	  sprintf(msg, "SYS_STATUS_ID %x\r\n", status);
+	  port_tx_msg(msg, strlen(msg));  // 또는 sizeof(msg) 아님
 
+	  LL_mDelay(1000);*/
 	  if (app.blinkenable)
 	  {
-		// instance_run();
+		 instance_run();
 
 	  }
-
-    /* USER CODE END WHILE */
+	  //LL_mDelay(100);
+	  /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   }

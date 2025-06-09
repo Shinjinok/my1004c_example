@@ -72,6 +72,9 @@ static void MX_I2C1_Init(void);
 #define WAIT_VALUE 33  // 약 860ns 지연 (33 / 38.4MHz)
 #define FRAME_LEN 12
 static uint8 tx_frame[FRAME_LEN] =  { 0xc5,0x00,0x00, 0x05, 0x00, 0x10, 0x00, 0x01, 0xCA, 0xDE,0,0};
+/* UWB microsecond (uus) to device time unit (dtu, around 15.65 ps) conversion factor.
+* 1 uus = 512 / 499.2 s and 1 s = 499.2 * 128 dtu. */
+#define UUS_TO_DWT_TIME 65536
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -80,7 +83,7 @@ static uint8 tx_frame[FRAME_LEN] =  { 0xc5,0x00,0x00, 0x05, 0x00, 0x10, 0x00, 0x
 app_cfg_t app;  // extern in instanc.h
 
 
-blink_msg_t my_msg={0xCCBBAAC5,0,0,0,0,0,0,0};
+
 /* @Fn  inittestapplication
 * @brief Function for initializing the SPI.
 *
@@ -113,7 +116,7 @@ int inittestapplication(void)
    }
 
    // configure: if DW1000 is calibrated then OTP config is used, enable sleep
-   result = instance_init( 1);
+   result = instance_init(0);
 
    if (0 > result) {
 	   Error_Handler();
@@ -134,7 +137,8 @@ int inittestapplication(void)
 
 
    // OSTSM 모드 활성화 (EC_CTRL[OSTSM]=1)
-  // dwt_write32bitreg(EXT_SYNC_ID, EC_CTRL_OSTSM);
+   dwt_write32bitreg(EXT_SYNC_ID, EC_CTRL_OSTRM);
+   dwt_write32bitreg(SYS_MASK_ID,SYS_MASK_MESYNCR);
 
    // WAIT 값 설정 (SYNC 입력 후 지연 카운트 값)
    //dwt_write32bitreg(EXT_SYNC_ID + 0x04, WAIT_VALUE); // 0x24:04 offset
@@ -224,37 +228,58 @@ int main(void)
     __enable_irq();
 
 
-
+    bool toggle = false;
+    uint32_t delayTime = 1000 << 8;
   while (1)
   {
 	  //vTestModeMotionDetect();
 
-	  if( deca_uart_rx_data_ready() )
+/*	  if( deca_uart_rx_data_ready() )
 	  {
 	  // process UART msg based on user input.
 		  process_uartmsg();
 
 		  LEDS_OFF(LED_BLUE_MASK);
+	  }*/
+/*
+	  if(!LL_GPIO_IsInputPinSet(Button_GPIO_Port, Button_Pin) & !toggle)  // Button pressed (active low)
+	  	  {*/
+	  		  LL_GPIO_SetOutputPin(SyncGPIO_GPIO_Port, SyncGPIO_Pin);    // Set SYNC_OUT high
+	  		  LL_GPIO_ResetOutputPin(SyncGPIO_GPIO_Port, SyncGPIO_Pin); // Set SYNC_OUT low
+	 /* 		  toggle = true;
+	  	  }
+	  	  if(LL_GPIO_IsInputPinSet(Button_GPIO_Port, Button_Pin) & toggle ){
+	  		  toggle = false;
+	  }*/
+	  		LL_mDelay(1);
+	  if (sync_cleared){
+//	  	my_msg.sqnumber++;
+//		dwt_writetxdata(sizeof(my_msg), (uint8*)&my_msg, 0);
+//		dwt_writetxfctrl(sizeof(my_msg), 0, 0);
+//		//dwt_starttx(DWT_START_TX_IMMEDIATE);
+//		dwt_setdelayedtrxtime(delayTime);
+//		dwt_starttx(DWT_START_TX_DELAYED);
+		while (!(dwt_read32bitreg(SYS_STATUS_ID) & SYS_STATUS_TXFRS)) {} // 전송 완료 플래그가 뜰 때까지 대기
+		dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_TXFRS); // 플래그 클리어
+		uint32_t status = dwt_read32bitreg(SYS_STATUS_ID);
+		char msg[64];  // 충분한 공간 확보
+		sprintf(msg, "SYS_STATUS_ID %x no. %lu\r\n", status,my_msg.sqnumber);
+		port_tx_msg(msg, strlen(msg));  // 또는 sizeof(msg) 아님
+		sync_cleared = 0;
+		uint32_t sys_time = dwt_readsystimestamphi32();
+		uint32_t tx_ts = dwt_readtxtimestamphi32();
+		sprintf(msg, "sync_cleared %lu  tx time stamp %lu \r\n", sys_time,tx_ts);
+		port_tx_msg(msg, strlen(msg));  // 또는 sizeof(msg) 아님
 	  }
-	  /*my_msg.sqnumber++;
-	  dwt_writetxdata(sizeof(my_msg), (uint8*)&my_msg, 0);
-	  dwt_writetxfctrl(sizeof(my_msg), 0, 0);
-	  dwt_starttx(DWT_START_TX_IMMEDIATE);
-	  while (!(dwt_read32bitreg(SYS_STATUS_ID) & SYS_STATUS_TXFRS)) {} // 전송 완료 플래그가 뜰 때까지 대기
-	  dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_TXFRS); // 플래그 클리어
-	  uint32_t status = dwt_read32bitreg(SYS_STATUS_ID);
-	  char msg[64];  // 충분한 공간 확보
-	  sprintf(msg, "SYS_STATUS_ID %x\r\n", status);
-	  port_tx_msg(msg, strlen(msg));  // 또는 sizeof(msg) 아님
 
-	  LL_mDelay(1000);*/
-	  if (app.blinkenable)
+	  LL_mDelay(10);
+	  /*if (app.blinkenable)
 	  {
 		 instance_run();
 
-	  }
+	  }*/
 	  //LL_mDelay(100);
-	  /* USER CODE END WHILE */
+    /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   }
@@ -630,6 +655,9 @@ static void MX_GPIO_Init(void)
   LL_GPIO_SetOutputPin(LED_Green_GPIO_Port, LED_Green_Pin);
 
   /**/
+  LL_GPIO_ResetOutputPin(SyncGPIO_GPIO_Port, SyncGPIO_Pin);
+
+  /**/
   LL_SYSCFG_SetEXTISource(LL_SYSCFG_EXTI_PORTA, LL_SYSCFG_EXTI_LINE0);
 
   /**/
@@ -637,9 +665,6 @@ static void MX_GPIO_Init(void)
 
   /**/
   LL_SYSCFG_SetEXTISource(LL_SYSCFG_EXTI_PORTA, LL_SYSCFG_EXTI_LINE3);
-
-  /**/
-  LL_SYSCFG_SetEXTISource(LL_SYSCFG_EXTI_PORTB, LL_SYSCFG_EXTI_LINE5);
 
   /**/
   LL_GPIO_SetPinPull(WakeUpBtn_GPIO_Port, WakeUpBtn_Pin, LL_GPIO_PULL_NO);
@@ -651,9 +676,6 @@ static void MX_GPIO_Init(void)
   LL_GPIO_SetPinPull(DW_IRQ_GPIO_Port, DW_IRQ_Pin, LL_GPIO_PULL_NO);
 
   /**/
-  LL_GPIO_SetPinPull(Button_GPIO_Port, Button_Pin, LL_GPIO_PULL_UP);
-
-  /**/
   LL_GPIO_SetPinMode(WakeUpBtn_GPIO_Port, WakeUpBtn_Pin, LL_GPIO_MODE_INPUT);
 
   /**/
@@ -661,9 +683,6 @@ static void MX_GPIO_Init(void)
 
   /**/
   LL_GPIO_SetPinMode(DW_IRQ_GPIO_Port, DW_IRQ_Pin, LL_GPIO_MODE_INPUT);
-
-  /**/
-  LL_GPIO_SetPinMode(Button_GPIO_Port, Button_Pin, LL_GPIO_MODE_INPUT);
 
   /**/
   EXTI_InitStruct.Line_0_31 = LL_EXTI_LINE_0;
@@ -684,13 +703,6 @@ static void MX_GPIO_Init(void)
   EXTI_InitStruct.LineCommand = ENABLE;
   EXTI_InitStruct.Mode = LL_EXTI_MODE_IT;
   EXTI_InitStruct.Trigger = LL_EXTI_TRIGGER_RISING;
-  LL_EXTI_Init(&EXTI_InitStruct);
-
-  /**/
-  EXTI_InitStruct.Line_0_31 = LL_EXTI_LINE_5;
-  EXTI_InitStruct.LineCommand = ENABLE;
-  EXTI_InitStruct.Mode = LL_EXTI_MODE_IT;
-  EXTI_InitStruct.Trigger = LL_EXTI_TRIGGER_FALLING;
   LL_EXTI_Init(&EXTI_InitStruct);
 
   /**/
@@ -750,10 +762,18 @@ static void MX_GPIO_Init(void)
   LL_GPIO_Init(LED_Green_GPIO_Port, &GPIO_InitStruct);
 
   /**/
-  GPIO_InitStruct.Pin = M_PIN17_Pin;
+  GPIO_InitStruct.Pin = SyncGPIO_Pin;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  LL_GPIO_Init(SyncGPIO_GPIO_Port, &GPIO_InitStruct);
+
+  /**/
+  GPIO_InitStruct.Pin = Button_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
-  LL_GPIO_Init(M_PIN17_GPIO_Port, &GPIO_InitStruct);
+  LL_GPIO_Init(Button_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   NVIC_SetPriority(EXTI0_1_IRQn, 0);

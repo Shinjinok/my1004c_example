@@ -296,7 +296,7 @@ int instance_init(int sleep_enable)
       tvc_otp_read_txcfgref(&ref, pbss->dwt_config.chan);
     }
 
-    dwt_entersleepaftertx(1);
+    dwt_entersleepaftertx(0);
 
     if (DWT_SUCCESS != result)
     {

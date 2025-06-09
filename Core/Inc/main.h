@@ -98,8 +98,8 @@ void Error_Handler(void);
 #define LIS3DH_CS_GPIO_Port GPIOA
 #define LED_Green_Pin LL_GPIO_PIN_3
 #define LED_Green_GPIO_Port GPIOB
-#define M_PIN17_Pin LL_GPIO_PIN_4
-#define M_PIN17_GPIO_Port GPIOB
+#define SyncGPIO_Pin LL_GPIO_PIN_4
+#define SyncGPIO_GPIO_Port GPIOB
 #define Button_Pin LL_GPIO_PIN_5
 #define Button_GPIO_Port GPIOB
 #ifndef NVIC_PRIORITYGROUP_0

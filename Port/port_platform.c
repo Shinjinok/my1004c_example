@@ -26,7 +26,7 @@
 #include <sys/types.h>
 #include "main.h"
 
-#include "stm32l0xx_ll_iwdg.h"
+//#include "stm32l0xx_ll_iwdg.h"
 
 /******************************************************************************
  *
@@ -1015,7 +1015,7 @@ void vTestModeMotionDetect(void)
   */
 void Restart(void)
 {
-  LL_IWDG_Enable(IWDG);
+/*  LL_IWDG_Enable(IWDG);
   LL_IWDG_EnableWriteAccess(IWDG);
   LL_IWDG_SetPrescaler(IWDG, LL_IWDG_PRESCALER_4);
   LL_IWDG_SetReloadCounter(IWDG, 10);
@@ -1024,7 +1024,7 @@ void Restart(void)
   }
 
   LL_IWDG_SetWindow(IWDG, 10);
-  LL_IWDG_ReloadCounter(IWDG);
+  LL_IWDG_ReloadCounter(IWDG);*/
 
   __disable_irq();
   while (1)

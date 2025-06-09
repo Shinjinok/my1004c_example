@@ -16,6 +16,7 @@
 #include <deca_regs.h>
 #include <deca_types.h>
 #include <stdlib.h>
+#include <instance.h>
 
 
 // Defines for enable_clocks function
@@ -86,7 +87,7 @@ typedef struct
 static dwt_local_data_t dw1000local[DWT_NUM_DW_DEV] ; // Static local device data, can be an array to support multiple DW1000 testing applications/platforms
 static dwt_local_data_t *pdw1000local = dw1000local ; // Static local data structure pointer
 
-
+int sync_cleared;
 /*! ------------------------------------------------------------------------------------------------------------------
  * @fn dwt_apiversion()
  *
@@ -2376,9 +2377,23 @@ uint8 dwt_checkirq(void)
  *
  * no return value
  */
+blink_msg_t my_msg={0xCCBBAAC5,0,0,0,0,0,0,0};
 void dwt_isr(void)
 {
     uint32 status = pdw1000local->cbData.status = dwt_read32bitreg(SYS_STATUS_ID); // Read status register low 32bits
+
+    if(status & SYS_STATUS_ESYNCR)
+	{
+    	dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_ESYNCR); // Clear all receive status bits
+    	my_msg.sqnumber++;
+		dwt_writetxdata(sizeof(my_msg), (uint8*)&my_msg, 0);
+		dwt_writetxfctrl(sizeof(my_msg), 0, 0);
+		//dwt_starttx(DWT_START_TX_IMMEDIATE);
+		dwt_setdelayedtrxtime(100000 << 8);
+		dwt_starttx(DWT_START_TX_DELAYED);
+    	sync_cleared = 1;
+	}
+
 
     // Handle RX good frame event
     if(status & SYS_STATUS_RXFCG)

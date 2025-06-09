@@ -33,6 +33,7 @@ typedef struct {
 } agc_cfg_struct ;
 
 extern const agc_cfg_struct agc_config ;
+extern int sync_cleared;
 
 //SFD threshold settings for 110k, 850k, 6.8Mb standard and non-standard
 extern const uint16 sftsh[NUM_BR][NUM_SFD];

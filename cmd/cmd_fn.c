@@ -197,10 +197,16 @@ REG_FN(f_jstat)
     sprintf(&str[strlen(str)],"\"BLINKSLOW\":%lu,\r\n",pbss->blink.interval_slow_in_ms);
     sprintf(&str[strlen(str)],"\"RANDOMNESS\":%d,\r\n",pbss->blink.randomness);
     sprintf(&str[strlen(str)],"\"TAGIDSET\":%d,\r\n",pbss->tagIDset);
+    sprintf(&str[strlen(str)],"\"ANCHORID\":%d,\r\n",pbss->anchorID);  
+    sprintf(&str[strlen(str)],"\"ANCHORX\":%d,\r\n",pbss->anchorX);
+    sprintf(&str[strlen(str)],"\"ANCHORY\":%d,\r\n",pbss->anchorY);
+    sprintf(&str[strlen(str)],"\"ANCHORZ\":%d,\r\n",pbss->anchorZ);
+    sprintf(&str[strlen(str)],"\"TXDELAY\":%d,\r\n",pbss->txDelay);
+    sprintf(&str[strlen(str)],"\"SYNCDELAY\":%d,\r\n",pbss->syncDelay);
     sprintf(&str[strlen(str)],"\"TAGID\":0x%02x%02x%02x%02x%02x%02x%02x%02x}}",
                                                pbss->tagID[7], pbss->tagID[6], pbss->tagID[5], pbss->tagID[4],
                                                pbss->tagID[3], pbss->tagID[2], pbss->tagID[1], pbss->tagID[0]);
-
+    
     sprintf(&str[2],"%04X",strlen(str)-hlen);//add formatted 4X of length, this will erase first '{'
     str[hlen]='{';                            //restore the start bracket
     sprintf(&str[strlen(str)],"\r\n");
@@ -290,7 +296,44 @@ REG_FN(f_save)
     return (CMD_FN_RET_OK);
 }
 
+
 //-----------------------------------------------------------------------------
+
+REG_FN(f_anchorID)
+{
+    pbss->anchorID = val;
+    return (CMD_FN_RET_OK);
+}   
+
+REG_FN(f_anchorX)
+{
+    pbss->anchorX = val;
+    return (CMD_FN_RET_OK);
+}
+
+REG_FN(f_anchorY)
+{
+    pbss->anchorY = val;
+    return (CMD_FN_RET_OK);
+}
+
+REG_FN(f_anchorZ)
+{
+    pbss->anchorZ = val;
+    return (CMD_FN_RET_OK);
+}
+
+REG_FN(f_txDelay)
+{
+    pbss->txDelay = val;
+    return (CMD_FN_RET_OK);
+}
+
+REG_FN(f_syncDelay)
+{
+    pbss->syncDelay = val;
+    return (CMD_FN_RET_OK);
+}       
 
 
 
@@ -327,6 +370,12 @@ const command_t known_commands []= {
     {"BLINKFAST", mANY, f_interval_in_ms},      //!< Blink interval in ms
     {"BLINKSLOW", mANY, f_interval_slow_in_ms}, //!< Blink interval in ms
     {"RANDOMNESS", mANY, f_randomness},         //!< Randomness in %
+    {"ANCHORID", mANY, f_anchorID},
+    {"ANCHORX", mANY, f_anchorX},
+    {"ANCHORY", mANY, f_anchorY},
+    {"ANCHORZ", mANY, f_anchorZ},
+    {"TXDELAY", mANY, f_txDelay},
+    {"SYNCDELAY", mANY, f_syncDelay},   
 
     {NULL,      mANY,   NULL}
 };

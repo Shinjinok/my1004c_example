@@ -234,23 +234,23 @@ int main(void)
   {
 	  //vTestModeMotionDetect();
 
-/*	  if( deca_uart_rx_data_ready() )
+	  if( deca_uart_rx_data_ready() )
 	  {
 	  // process UART msg based on user input.
 		  process_uartmsg();
 
 		  LEDS_OFF(LED_BLUE_MASK);
-	  }*/
-/*
+	  }
+
 	  if(!LL_GPIO_IsInputPinSet(Button_GPIO_Port, Button_Pin) & !toggle)  // Button pressed (active low)
-	  	  {*/
+	  	  {
 	  		  LL_GPIO_SetOutputPin(SyncGPIO_GPIO_Port, SyncGPIO_Pin);    // Set SYNC_OUT high
 	  		  LL_GPIO_ResetOutputPin(SyncGPIO_GPIO_Port, SyncGPIO_Pin); // Set SYNC_OUT low
-	 /* 		  toggle = true;
+	  		  toggle = true;
 	  	  }
 	  	  if(LL_GPIO_IsInputPinSet(Button_GPIO_Port, Button_Pin) & toggle ){
 	  		  toggle = false;
-	  }*/
+	  }
 	  		LL_mDelay(1);
 	  if (sync_cleared){
 //	  	my_msg.sqnumber++;

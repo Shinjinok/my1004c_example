@@ -2377,7 +2377,7 @@ uint8 dwt_checkirq(void)
  *
  * no return value
  */
-blink_msg_t my_msg={0xCCBBAAC5,0,0,0,0,0,0,0};
+blink_msg_t my_msg={0xCCBBAAC5,0,0,0,0,0,0,0,0,0};
 void dwt_isr(void)
 {
     uint32 status = pdw1000local->cbData.status = dwt_read32bitreg(SYS_STATUS_ID); // Read status register low 32bits
@@ -2385,11 +2385,19 @@ void dwt_isr(void)
     if(status & SYS_STATUS_ESYNCR)
 	{
     	dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_ESYNCR); // Clear all receive status bits
+    	param_block_t *pbss = get_pbssConfig();
     	my_msg.sqnumber++;
+    	my_msg.anchor_id = pbss->anchorID;
+        my_msg.anchor_x = pbss->anchorX;
+        my_msg.anchor_y = pbss->anchorY;
+        my_msg.anchor_z = pbss->anchorZ;
+        my_msg.tx_delay = pbss->txDelay;
+        my_msg.sync_delay = pbss->syncDelay;
+
 		dwt_writetxdata(sizeof(my_msg), (uint8*)&my_msg, 0);
 		dwt_writetxfctrl(sizeof(my_msg), 0, 0);
 		//dwt_starttx(DWT_START_TX_IMMEDIATE);
-		dwt_setdelayedtrxtime(100000 << 8);
+		dwt_setdelayedtrxtime( my_msg.tx_delay);
 		dwt_starttx(DWT_START_TX_DELAYED);
     	sync_cleared = 1;
 	}

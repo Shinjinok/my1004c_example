@@ -44,6 +44,10 @@ static void cmd_onERROR(const char *err, control_t *pcmd)
     port_tx_msg(str, strlen(str));
 }
 
+#define STR_EXPAND(tok) #tok
+#define CMD_FORMAT(tok) "%" STR_EXPAND(tok) "s %d"
+
+#define MAX_COMMAND_SIZE 20
 
 /* @fn         command_parser
  * @brief    checks if input "text" string in known "COMMAND" or "PARAMETER VALUE" format,

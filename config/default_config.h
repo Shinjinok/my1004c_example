@@ -59,6 +59,12 @@
                             .tagID = {0,0,0,0,0,0,0,0},\
                             .tagIDset = 0,\
                             .version = {DW1000_DEVICE_DRIVER_VER_STRING}, \
+                            .anchorID = 1, \
+                            .anchorX = 2, \
+                            .anchorY = 3, \
+                            .anchorZ = 4, \
+                            .txDelay = 1000 << 8, \
+                            .syncDelay = 6 \
 }
 
 /* Application FCONFIG size */
@@ -80,6 +86,12 @@ typedef struct param_block{
     uint8_t         tagID[8];
     uint8_t         tagIDset;
     char            version[64];
+    uint32_t        anchorID;
+    int32_t         anchorX;
+    int32_t         anchorY;
+    int32_t         anchorZ;
+    uint32_t        txDelay;
+    uint32_t        syncDelay;
 }param_block_t;
 
 // if one got "error: size of array 'free' is too large" this means param_block_t plus CRC don't fit into FCONFIG_PAGE_SIZE

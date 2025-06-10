@@ -34,10 +34,12 @@ typedef struct blink_msg{
 	uint32_t header;
 	uint32_t anchor_id;
 	uint32_t sqnumber;
-	uint32_t delay_time;
-	int32_t	posx;
-	int32_t posy;
-	int32_t posz;
+    int32_t	anchor_x;   
+	int32_t anchor_y;
+	int32_t anchor_z;
+	uint32_t tx_delay;
+	uint32_t sync_delay;
+	uint16_t check;
 }blink_msg_t;
 
 extern app_cfg_t app;

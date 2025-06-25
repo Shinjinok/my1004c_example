@@ -81,7 +81,7 @@ static uint8 tx_frame[FRAME_LEN] =  { 0xc5,0x00,0x00, 0x05, 0x00, 0x10, 0x00, 0x
 /* USER CODE BEGIN 0 */
 /* Structure for all global variables */
 app_cfg_t app;  // extern in instanc.h
-
+blink_msg_t my_msg;
 
 
 /* @Fn  inittestapplication
@@ -230,6 +230,15 @@ int main(void)
 
     bool toggle = false;
     uint32_t delayTime = 1000 << 8;
+    uint32_t delayCount =0;
+    param_block_t *pbss = get_pbssConfig();
+    my_msg.header = 0xCCBBAAC5;
+    my_msg.anchor_id = pbss->anchorID;
+    my_msg.anchor_x = pbss->anchorX;
+    my_msg.anchor_y = pbss->anchorY;
+    my_msg.anchor_z = pbss->anchorZ;
+    my_msg.sync_delay = pbss->syncDelay;
+    my_msg.tx_delay = pbss->txDelay;
   while (1)
   {
 	  //vTestModeMotionDetect();
@@ -238,41 +247,23 @@ int main(void)
 	  {
 	  // process UART msg based on user input.
 		  process_uartmsg();
-
 		  LEDS_OFF(LED_BLUE_MASK);
 	  }
-
-	  if(!LL_GPIO_IsInputPinSet(Button_GPIO_Port, Button_Pin) & !toggle)  // Button pressed (active low)
-	  	  {
-	  		  LL_GPIO_SetOutputPin(SyncGPIO_GPIO_Port, SyncGPIO_Pin);    // Set SYNC_OUT high
-	  		  LL_GPIO_ResetOutputPin(SyncGPIO_GPIO_Port, SyncGPIO_Pin); // Set SYNC_OUT low
-	  		  toggle = true;
-	  	  }
-	  	  if(LL_GPIO_IsInputPinSet(Button_GPIO_Port, Button_Pin) & toggle ){
-	  		  toggle = false;
+	  if(delayCount > 999 && my_msg.anchor_id == 1){
+		 LL_GPIO_SetOutputPin(sync_GPIO_Port, sync_Pin);    // Set SYNC_OUT high
+		 LL_GPIO_ResetOutputPin(sync_GPIO_Port, sync_Pin); // Set SYNC_OUT low
+	     delayCount =0;
 	  }
-	  		LL_mDelay(1);
-	  if (sync_cleared){
-//	  	my_msg.sqnumber++;
-//		dwt_writetxdata(sizeof(my_msg), (uint8*)&my_msg, 0);
-//		dwt_writetxfctrl(sizeof(my_msg), 0, 0);
-//		//dwt_starttx(DWT_START_TX_IMMEDIATE);
-//		dwt_setdelayedtrxtime(delayTime);
-//		dwt_starttx(DWT_START_TX_DELAYED);
-		while (!(dwt_read32bitreg(SYS_STATUS_ID) & SYS_STATUS_TXFRS)) {} // 전송 완료 플래그가 뜰 때까지 대기
-		dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_TXFRS); // 플래그 클리어
-		uint32_t status = dwt_read32bitreg(SYS_STATUS_ID);
-		char msg[64];  // 충분한 공간 확보
-		sprintf(msg, "SYS_STATUS_ID %x no. %lu\r\n", status,my_msg.sqnumber);
-		port_tx_msg(msg, strlen(msg));  // 또는 sizeof(msg) 아님
-		sync_cleared = 0;
-		uint32_t sys_time = dwt_readsystimestamphi32();
-		uint32_t tx_ts = dwt_readtxtimestamphi32();
-		sprintf(msg, "sync_cleared %lu  tx time stamp %lu \r\n", sys_time,tx_ts);
-		port_tx_msg(msg, strlen(msg));  // 또는 sizeof(msg) 아님
-	  }
+	  delayCount++;
+	  LL_mDelay(1);
+//	  if (sync_cleared){
+//		  sync_cleared = 0;
+//		while (!(dwt_read32bitreg(SYS_STATUS_ID) & SYS_STATUS_TXFRS)) {} // 전송 완료 플래그가 뜰 때까지 대기
+//		dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_TXFRS); // 플래그 클리어
+//
+//	  }
 
-	  LL_mDelay(10);
+	 // LL_mDelay(10);
 	  /*if (app.blinkenable)
 	  {
 		 instance_run();
@@ -655,7 +646,7 @@ static void MX_GPIO_Init(void)
   LL_GPIO_SetOutputPin(LED_Green_GPIO_Port, LED_Green_Pin);
 
   /**/
-  LL_GPIO_ResetOutputPin(SyncGPIO_GPIO_Port, SyncGPIO_Pin);
+  LL_GPIO_ResetOutputPin(sync_GPIO_Port, sync_Pin);
 
   /**/
   LL_SYSCFG_SetEXTISource(LL_SYSCFG_EXTI_PORTA, LL_SYSCFG_EXTI_LINE0);
@@ -762,18 +753,12 @@ static void MX_GPIO_Init(void)
   LL_GPIO_Init(LED_Green_GPIO_Port, &GPIO_InitStruct);
 
   /**/
-  GPIO_InitStruct.Pin = SyncGPIO_Pin;
+  GPIO_InitStruct.Pin = sync_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-  LL_GPIO_Init(SyncGPIO_GPIO_Port, &GPIO_InitStruct);
-
-  /**/
-  GPIO_InitStruct.Pin = Button_Pin;
-  GPIO_InitStruct.Mode = LL_GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
-  LL_GPIO_Init(Button_GPIO_Port, &GPIO_InitStruct);
+  LL_GPIO_Init(sync_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   NVIC_SetPriority(EXTI0_1_IRQn, 0);

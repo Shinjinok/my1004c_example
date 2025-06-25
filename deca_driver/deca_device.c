@@ -17,7 +17,8 @@
 #include <deca_types.h>
 #include <stdlib.h>
 #include <instance.h>
-
+#include <stdio.h>
+#include <port_platform.h>
 
 // Defines for enable_clocks function
 #define FORCE_SYS_XTI  0
@@ -34,7 +35,9 @@
 #define FCTRL_ACK_REQ_MASK 0x20
 // Frame control maximum length in bytes.
 #define FCTRL_LEN_MAX 2
-
+#define RX_BUF_LEN 126
+static uint8 rx_buffer[RX_BUF_LEN];
+const uint32 header = 0xccbbaac5;
 // #define DWT_API_ERROR_CHECK     // define so API checks config input parameters
 
 // -------------------------------------------------------------------------------------------------------------------
@@ -2377,7 +2380,7 @@ uint8 dwt_checkirq(void)
  *
  * no return value
  */
-blink_msg_t my_msg={0xCCBBAAC5,0,0,0,0,0,0,0,0,0};
+
 void dwt_isr(void)
 {
     uint32 status = pdw1000local->cbData.status = dwt_read32bitreg(SYS_STATUS_ID); // Read status register low 32bits
@@ -2385,21 +2388,26 @@ void dwt_isr(void)
     if(status & SYS_STATUS_ESYNCR)
 	{
     	dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_ESYNCR); // Clear all receive status bits
-    	param_block_t *pbss = get_pbssConfig();
-    	my_msg.sqnumber++;
-    	my_msg.anchor_id = pbss->anchorID;
-        my_msg.anchor_x = pbss->anchorX;
-        my_msg.anchor_y = pbss->anchorY;
-        my_msg.anchor_z = pbss->anchorZ;
-        my_msg.tx_delay = pbss->txDelay;
-        my_msg.sync_delay = pbss->syncDelay;
 
-		dwt_writetxdata(sizeof(my_msg), (uint8*)&my_msg, 0);
-		dwt_writetxfctrl(sizeof(my_msg), 0, 0);
-		//dwt_starttx(DWT_START_TX_IMMEDIATE);
-		dwt_setdelayedtrxtime( my_msg.tx_delay);
-		dwt_starttx(DWT_START_TX_DELAYED);
-    	sync_cleared = 1;
+    	if(my_msg.anchor_id == 1){
+			my_msg.sqnumber++;
+			dwt_setdelayedtrxtime( my_msg.tx_delay);
+			dwt_writetxdata(sizeof(my_msg), (uint8*)&my_msg, 0);
+			dwt_writetxfctrl(sizeof(my_msg), 0, 0);
+			dwt_starttx(DWT_START_TX_DELAYED);
+//
+//			char msg[64];  // 충분한 공간 확보
+//			uint32_t sys_time = dwt_readsystimestamphi32();
+//			sprintf(msg, "sync_cleared %lu, SQN %lu\r\n", sys_time,my_msg.sqnumber);
+//			port_tx_msg(msg, strlen(msg));  // 또는 sizeof(msg) 아님
+
+		}
+		else{
+
+			dwt_rxenable(DWT_START_RX_IMMEDIATE);
+		}
+
+
 	}
 
 
@@ -2455,6 +2463,27 @@ void dwt_isr(void)
             // Toggle the Host side Receive Buffer Pointer
             dwt_write8bitoffsetreg(SYS_CTRL_ID, SYS_CTRL_HRBT_OFFSET, 1);
         }
+
+         //  /* A frame has been received, read it into the local buffer. */
+         uint32 frame_len = dwt_read32bitreg(RX_FINFO_ID) & RX_FINFO_RXFLEN_MASK;
+		   if (frame_len <= RX_BUF_LEN)
+		   {
+			 dwt_readrxdata(rx_buffer, frame_len, 0);
+			 if (memcmp(rx_buffer,(const void *) &header, 4) == 0){
+			 	 blink_msg_t master_msg;
+				 memcpy((void *) &master_msg,(const void *) &rx_buffer, sizeof(blink_msg_t));
+				 my_msg.sqnumber = master_msg.sqnumber;
+			   }
+
+			 dwt_setdelayedtrxtime( my_msg.tx_delay);
+			 dwt_writetxdata(sizeof(my_msg), (uint8*)&my_msg, 0);
+			 dwt_writetxfctrl(sizeof(my_msg), 0, 0);
+			 dwt_starttx(DWT_START_TX_DELAYED);
+			 sync_cleared = 1;
+		   }
+
+
+
     }
 
     // Handle TX confirmation event
@@ -2478,6 +2507,12 @@ void dwt_isr(void)
         {
             pdw1000local->cbTxDone(&pdw1000local->cbData);
         }
+
+        char msg[64];  // 충분한 공간 확보
+		uint32_t sys_time = dwt_readsystimestamphi32();
+		uint32_t tx_ts = dwt_readtxtimestamphi32();
+		sprintf(msg, "No. %lu sys_time %lu  tx ts %lu \r\n", my_msg.sqnumber, sys_time,tx_ts);
+		port_tx_msg(msg, strlen(msg));  // 또는 sizeof(msg) 아님
     }
 
     // Handle frame reception/preamble detect timeout events
